@@ -29,14 +29,14 @@ struct information{
 typedef struct information Record;
 
 char* new_gets(char *str,int limits);
-int ReadFromFile(Record ** Book,int *count);
+int ReadFromFile(Record ** Book,int *count,char buff[]);
 
 
 int menu();
 
 void Show(Record * Book);
 
-void Quit(Record * Book);
+void Quit(Record * Book,char *);
 void Modify (Record *Book, int count);
 void EnterRecord(Record ** Book,int *count);
 
@@ -47,8 +47,9 @@ void Delete(Record ** Book,int count);
 int main (void)
 {
     Record * AppBook=NULL;
+    char buff[WHEN_LEN];
     int quit = 0, choice,count=0;
-    if (ReadFromFile (&AppBook,&count))
+    if (ReadFromFile (&AppBook,&count,buff))
         return 0;
     while (! quit) {
         choice = menu(); // get a choice
@@ -60,7 +61,7 @@ int main (void)
             case 5: Delete(&AppBook,count); break;
             //case 6: Search(AppBook); break;
             case 7: Show(AppBook);break;
-            case 9: Quit(AppBook); quit = 1; break;
+            case 9: Quit(AppBook,buff); quit = 1; break;
             default: printf("Please enter a choice 1-7 or 9 to quit\n");
         }
     }
@@ -152,8 +153,19 @@ void EnterRecord(Record ** Book,int *count) {
     }
 }
 
-void Quit(Record * Book) {
-    FILE *output = fopen("C:\\Users\\ysche\\Desktop\\appointment_book/data.txt","w");
+void Quit(Record * Book, char buff[]) {
+    FILE *output;
+    printf("ReadFromFile -- ask the file name from user");
+    printf(" and process the file\n");
+
+    printf("Please enter a absolute path of file to open/save: ");
+    scanf("%s", buff);
+    //strcpy(buff , "C:\\Users\\ysche\\Desktop\\Appointment Book list/data.txt\0");
+    printf("Opening file: %s ....\n", buff);
+    if( (output = fopen(buff,"r")) == NULL){
+        fclose(output);
+        return;
+    }
     Record *before;
     while (Book != NULL){
         fprintf(output, "%s\n", Book->who);
@@ -196,8 +208,16 @@ int menu() {
     return i;
 }
 
-int ReadFromFile(Record ** Book,int *count) {
-    FILE *input= fopen("C:\\Users\\ysche\\Desktop\\appointment_book/data.txt","r");
+int ReadFromFile(Record ** Book,int *count, char buff[]) {
+    FILE * input;
+    printf("ReadFromFile -- ask the file name from user");
+    printf(" and process the file\n");
+
+    printf("Please enter a absolute path of file to open/save: ");
+    scanf("%s", buff);
+    //strcpy(buff , "C:\\Users\\ysche\\Desktop\\Appointment Book list/data.txt\0");
+    printf("Opening file: %s ....\n", buff);
+    input = fopen(buff,"r");
     if (input==NULL){
         printf("Error\n");
         fclose(input);
